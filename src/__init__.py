@@ -1,1 +1,1 @@
-﻿"""Personal serendipity news engine."""
+"""自分用セレンディピティ記事推薦エンジン。"""

@@ -10,12 +10,12 @@ def embed_missing_articles(limit: int = 200) -> int:
     rows = fetch_all(conn, "SELECT id, title, summary FROM articles WHERE embedding IS NULL LIMIT ?", (limit,))
     if not rows:
         conn.close()
-        print("[embed] embedded articles: 0")
+        print("[embed] embedding作成記事: 0")
         return 0
     vectors = embed_texts([article_text(row["title"], row["summary"]) for row in rows])
     for row, vector in zip(rows, vectors):
         conn.execute("UPDATE articles SET embedding = ? WHERE id = ?", (pack_vector(vector), row["id"]))
     conn.commit()
     conn.close()
-    print(f"[embed] embedded articles: {len(rows)}")
+    print(f"[embed] embedding作成記事: {len(rows)}")
     return len(rows)

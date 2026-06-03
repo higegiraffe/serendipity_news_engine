@@ -19,12 +19,12 @@ def classify_recommendation(interest: float, novelty: float, source: float) -> s
 
 def reason_for(kind: str, matched_profile: str, interest: float, novelty: float) -> str:
     if kind == "known_interest":
-        return f"Close to your interest profile '{matched_profile}' (interest={interest:.2f})."
+        return f"関心プロファイル「{matched_profile}」に近いため推薦しました（関心度={interest:.2f}）。"
     if kind == "adjacent_interest":
-        return f"A little away from '{matched_profile}', but novel enough to broaden the search (novelty={novelty:.2f})."
+        return f"「{matched_profile}」から少し離れていますが、探索範囲を広げる新しさがあります（新規性={novelty:.2f}）。"
     if kind == "surprise":
-        return f"Not your usual center, but it is novel and from a trusted enough source (novelty={novelty:.2f})."
-    return "Included by overall score."
+        return f"普段の関心中心からは離れていますが、新規性と情報源の信頼度があるため意外性枠に入れました（新規性={novelty:.2f}）。"
+    return "総合スコアにより推薦候補に含めました。"
 
 
 def search_terms(title: str, summary: str | None, matched_profile: str) -> str:
@@ -48,6 +48,10 @@ def score_articles() -> int:
     conn = connect()
     profiles = profile_vectors(conn)
     seen = [unpack_vector(row["embedding"]) for row in fetch_all(conn, "SELECT a.embedding FROM articles a JOIN feedback f ON f.article_id = a.id WHERE a.embedding IS NOT NULL")]
+    source_scores = {
+        row["source_name"]: float(row["source_score"])
+        for row in fetch_all(conn, "SELECT source_name, source_score FROM source_stats WHERE source_name IS NOT NULL")
+    }
     rows = fetch_all(conn, "SELECT * FROM articles WHERE embedding IS NOT NULL")
     count = 0
     for row in rows:
@@ -55,7 +59,7 @@ def score_articles() -> int:
         interest, matched_profile = interest_score(vector, profiles)
         novelty = novelty_score(vector, seen)
         freshness = freshness_score(row["published_at"])
-        source = row["source_score"] if row["source_score"] is not None else 0.5
+        source = source_scores.get(row["source_name"], row["source_score"] if row["source_score"] is not None else 0.5)
         score = final_score(interest, novelty, freshness, source, weights)
         kind = classify_recommendation(interest, novelty, source)
         conn.execute("""
@@ -65,7 +69,7 @@ def score_articles() -> int:
         count += 1
     conn.commit()
     conn.close()
-    print(f"[score] scored articles: {count}")
+    print(f"[score] スコア計算記事: {count}")
     return count
 
 

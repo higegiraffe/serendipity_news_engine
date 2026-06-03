@@ -37,7 +37,7 @@ def cmd_run(args) -> None:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Personal serendipity news engine")
+    parser = argparse.ArgumentParser(description="自分用セレンディピティ記事推薦エンジン")
     sub = parser.add_subparsers(dest="command", required=True)
     for name, func in {"init": cmd_init, "fetch": cmd_fetch, "embed": cmd_embed, "score": cmd_score, "run": cmd_run}.items():
         p = sub.add_parser(name)

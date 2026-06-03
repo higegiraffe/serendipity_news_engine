@@ -20,7 +20,7 @@ def summarize_article(title: str, summary: str | None) -> str:
     try:
         from openai import OpenAI
         client = OpenAI()
-        response = client.responses.create(model="gpt-4.1-mini", input=f"Summarize this article in Japanese in one sentence.\nTitle: {title}\nSummary: {summary or ''}")
+        response = client.responses.create(model="gpt-4.1-mini", input=f"この記事を日本語で1文に要約してください。\nタイトル: {title}\n概要: {summary or ''}")
         return response.output_text.strip()
     except Exception:
         return (summary or title)[:240]
@@ -28,11 +28,11 @@ def summarize_article(title: str, summary: str | None) -> str:
 
 def summarize_interest_axis(feedback_text: str) -> str:
     if not has_openai_key():
-        return "Feedback is reflected through article vectors; add an OpenAI key for language-level memo generation."
+        return "フィードバックは記事ベクトルを通じて反映されます。言語レベルのメモ生成には OpenAI API キーを設定してください。"
     try:
         from openai import OpenAI
         client = OpenAI()
-        response = client.responses.create(model="gpt-4.1-mini", input=f"Extract up to five Japanese interest axes from this feedback.\n{feedback_text}")
+        response = client.responses.create(model="gpt-4.1-mini", input=f"このフィードバックから、関心軸を日本語で最大5個抽出してください。\n{feedback_text}")
         return response.output_text.strip()
     except Exception as exc:
-        return f"LLM memo unavailable: {exc}"
+        return f"LLMメモを生成できませんでした: {exc}"

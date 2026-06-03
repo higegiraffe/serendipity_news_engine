@@ -26,7 +26,7 @@ def fetch_articles(max_articles: int | None = None) -> int:
     try:
         import feedparser
     except ModuleNotFoundError:
-        print("[fetch] feedparser is not installed. Run: pip install -r requirements.txt")
+        print("[fetch] feedparser がインストールされていません。実行してください: pip install -r requirements.txt")
         return 0
     new_count = 0
     conn = connect()
@@ -34,7 +34,7 @@ def fetch_articles(max_articles: int | None = None) -> int:
         try:
             parsed = feedparser.parse(feed["url"])
         except Exception as exc:
-            print(f"[fetch] failed: {feed.get('name')} {exc}")
+            print(f"[fetch] 取得失敗: {feed.get('name')} {exc}")
             continue
         for entry in parsed.entries[: max_articles or None]:
             title = (entry.get("title") or "").strip()
@@ -47,5 +47,5 @@ def fetch_articles(max_articles: int | None = None) -> int:
             if save_article(conn, article):
                 new_count += 1
     conn.close()
-    print(f"[fetch] new articles: {new_count}")
+    print(f"[fetch] 新規記事: {new_count}")
     return new_count

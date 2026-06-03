@@ -1,16 +1,16 @@
-﻿seed_interests:
-  - name: "AI for daily life support"
-    description: "AI, cameras, voice, smart homes, automation, dementia support, lost-item prevention, care support, and practical tools that solve everyday problems."
+seed_interests:
+  - name: "AIによる生活支援"
+    description: "AI、カメラ、音声、スマートホーム、自動化、認知症支援、忘れ物防止、介護支援など、生活上の困りごとを解決する実用的な技術。"
     weight: 1.0
-  - name: "Why useful technology does not spread"
-    description: "Barriers that prevent promising technology from adoption, including cost, regulation, UX, privacy, operations, and maintenance burden."
+  - name: "有用な技術が普及しない理由"
+    description: "技術的には可能そうなのに、コスト、制度、UX、プライバシー、現場運用、保守負担などによって普及しない理由。"
     weight: 1.2
-  - name: "FX, MT4, and trading logic"
-    description: "MT4, indicators, expert advisors, Fibonacci, pivots, regime filters, trade logs, and automated trading strategy design."
+  - name: "FX・MT4・売買ロジック"
+    description: "MT4、インジケーター、EA、フィボナッチ、ピボット、相場環境フィルター、トレード日誌、売買戦略の設計。"
     weight: 1.0
-  - name: "Reasoning behind mechanical structures"
-    description: "Vehicle, aircraft, robot, camera, and machine mechanisms, with interest in why a shape or structure was chosen."
+  - name: "機械構造の理由"
+    description: "車、航空機、ロボット、カメラ、機械の構造について、なぜその形や仕組みになっているのかを知ること。"
     weight: 1.0
-  - name: "Usability of UI and institutions"
-    description: "Applications, workflows, public services, business systems, transport services, and rule/interface design that create friction or improvement."
+  - name: "UIと制度の使いにくさ"
+    description: "アプリ、作業手順、公共サービス、業務システム、交通サービス、ルールやインターフェース設計における不便さや改善余地。"
     weight: 1.1

@@ -44,7 +44,7 @@ def _local_model(model_name: str):
         from sentence_transformers import SentenceTransformer
         return SentenceTransformer(model_name)
     except Exception as exc:
-        print(f"[embed] using hash fallback: {exc}")
+        print(f"[embed] ハッシュ代替を使用します: {exc}")
         return None
 
 
@@ -60,7 +60,7 @@ def embed_texts(texts: list[str]) -> list[np.ndarray]:
             response = client.embeddings.create(model=model, input=texts)
             return [np.asarray(item.embedding, dtype=np.float32) for item in response.data]
         except Exception as exc:
-            print(f"[embed] OpenAI failed, falling back to local: {exc}")
+            print(f"[embed] OpenAI embedding に失敗したためローカルへ切り替えます: {exc}")
     model_name = settings.get("embedding", {}).get("local_model", "paraphrase-multilingual-MiniLM-L12-v2")
     model = _local_model(model_name)
     if model is None:

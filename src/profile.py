@@ -4,7 +4,7 @@ import numpy as np
 
 from .db import connect, fetch_all
 from .embedding import embed_texts, pack_vector, unpack_vector
-from .scoring import cosine_similarity
+from .scoring import cosine_similarity, source_score
 from .utils import CONFIG_DIR, load_yaml, utc_now_iso
 
 
@@ -44,15 +44,53 @@ def interest_score(article_embedding, profiles) -> tuple[float, str]:
     return max(0.0, min(1.0, best_score)), best_name
 
 
+def update_source_stats_from_feedback(conn) -> int:
+    rows = fetch_all(conn, "SELECT source_name, source_score FROM source_stats WHERE source_name IS NOT NULL")
+    updated = 0
+    for row in rows:
+        positive = conn.execute(
+            """
+            SELECT COUNT(*)
+            FROM feedback f
+            JOIN articles a ON a.id = f.article_id
+            WHERE a.source_name = ? AND f.rating >= 2
+            """,
+            (row["source_name"],),
+        ).fetchone()[0]
+        negative = conn.execute(
+            """
+            SELECT COUNT(*)
+            FROM feedback f
+            JOIN articles a ON a.id = f.article_id
+            WHERE a.source_name = ? AND f.rating <= 1
+            """,
+            (row["source_name"],),
+        ).fetchone()[0]
+        score = source_score(float(row["source_score"] or 0.5), positive, negative)
+        conn.execute(
+            """
+            UPDATE source_stats
+            SET positive_feedback_count = ?, negative_feedback_count = ?, source_score = ?, updated_at = ?
+            WHERE source_name = ?
+            """,
+            (positive, negative, score, utc_now_iso(), row["source_name"]),
+        )
+        updated += 1
+    return updated
+
+
 def update_profile_from_feedback() -> int:
     conn = connect()
+    update_source_stats_from_feedback(conn)
     profiles = profile_vectors(conn)
     if not profiles:
+        conn.commit()
         conn.close()
         return 0
     positive = [unpack_vector(row["embedding"]) for row in fetch_all(conn, "SELECT a.embedding FROM articles a JOIN feedback f ON f.article_id = a.id WHERE f.rating >= 2 AND a.embedding IS NOT NULL")]
     negative = [unpack_vector(row["embedding"]) for row in fetch_all(conn, "SELECT a.embedding FROM articles a JOIN feedback f ON f.article_id = a.id WHERE f.rating <= 1 AND a.embedding IS NOT NULL")]
     if not positive and not negative:
+        conn.commit()
         conn.close()
         return 0
     pos_mean = np.mean(positive, axis=0) if positive else None

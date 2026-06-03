@@ -1,22 +1,45 @@
-﻿# Personal Serendipity News Engine
+# 自分用セレンディピティ記事推薦エンジン
 
-A local-first article recommendation engine that collects RSS entries, embeds titles and summaries, scores them against a personal interest profile, and learns from your feedback.
+RSS から記事を収集し、タイトルと概要をベクトル化して、自分の関心プロファイルとの近さ・新しさ・鮮度・情報源の信頼度から記事を推薦するローカル優先の Python アプリです。
 
-The goal is not to collect every article. The goal is to estimate interests that are hard to express as search terms, then surface known-interest, adjacent-interest, and surprise articles with a visible reason.
+単なる RSS リーダーではなく、検索語にしにくい関心をフィードバックから少しずつ推定し、「既知の関心」「隣接する関心」「意外性のある記事」を理由付きで表示することを目指しています。
 
-## Setup on Windows
+## 現在の実装状況
+
+MVP の主要な流れは実装済みです。
+
+- `config/feeds.yaml` の RSS から記事を取得し、SQLite に保存
+- 記事タイトル・概要の embedding を作成
+- `config/interests.yaml` の初期関心プロファイルを登録
+- 関心類似度、新規性、鮮度、情報源スコアから推薦スコアを計算
+- Streamlit 画面で推薦記事、全記事、関心プロファイル、検索語候補を表示
+- 記事ごとの評価、コメント、あとで読む、深掘りフラグを保存
+- 評価済み記事を使って関心プロファイルを再計算
+- OpenAI API キーがない場合もローカル embedding またはハッシュ代替で動作
+
+記事本文の全文取得、Web 検索 API 連携、RSS 情報源の自動提案、日次レポート、関心の可視化は今後の拡張予定です。
+
+## セットアップ
+
+Windows PowerShell で実行します。
 
 ```powershell
-cd C:\Users\10003963\Documents\User\python\serendipity_news_engine
+cd C:\Users\USER\Documents\python\serendipity_news_engine
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 copy .env.example .env
 ```
 
-OpenAI is optional. Without `OPENAI_API_KEY`, the app uses local embeddings. If `sentence-transformers` is not installed yet, it falls back to deterministic hash embeddings so the CLI and tests still run.
+OpenAI API は任意です。利用する場合は `.env` に設定します。
 
-## Commands
+```text
+OPENAI_API_KEY=sk-...
+```
+
+API キーがない場合、`embedding.provider` が `local` の設定でローカルモデルを使います。`sentence-transformers` がまだ使えない環境では、CLI とテストが動くように決定的なハッシュ embedding に切り替えます。
+
+## コマンド
 
 ```powershell
 python -m src.main init
@@ -27,29 +50,53 @@ python -m src.main run
 streamlit run src/ui_streamlit.py
 ```
 
-## Configuration
+各コマンドの意味は次の通りです。
 
-- Add or disable RSS feeds in `config/feeds.yaml`.
-- Edit seed interests in `config/interests.yaml`.
-- Change embedding provider and scoring weights in `config/settings.yaml`.
-- Set `embedding.provider` to `openai` and add `OPENAI_API_KEY` to `.env` for OpenAI embeddings.
+- `init`: DB を作成し、初期関心プロファイルを登録
+- `fetch`: RSS から記事を取得して DB に保存
+- `embed`: embedding 未作成の記事をベクトル化
+- `score`: フィードバックを反映し、記事スコアを再計算
+- `run`: `fetch`、`embed`、`score` をまとめて実行
+- `streamlit run src/ui_streamlit.py`: UI を起動
 
-## Scoring
+## 設定
+
+- RSS は `config/feeds.yaml` で追加・無効化・信頼度調整をします。
+- 初期関心プロファイルは `config/interests.yaml` で編集します。
+- embedding provider やスコア重みは `config/settings.yaml` で変更します。
+- OpenAI embeddings を使う場合は `embedding.provider` を `openai` にし、`.env` に `OPENAI_API_KEY` を設定します。
+
+## スコアリング
 
 ```text
-final_score = similarity_weight * interest_score + novelty_weight * novelty_score + freshness_weight * freshness_score + source_weight * source_score
+final_score =
+  similarity_weight * interest_score
++ novelty_weight    * novelty_score
++ freshness_weight  * freshness_score
++ source_weight     * source_score
 ```
 
-Recommendation types are `known_interest`, `adjacent_interest`, and `surprise`. Feedback is saved in SQLite and used to update profile vectors and source scores.
+推薦タイプは次の4種類です。
 
-The database is stored at `data/app.db`. Article body scraping and web search APIs are intentionally left for later phases; the MVP displays generated search keywords for future exploration.
+- `known_interest`: 既知の関心に近い記事
+- `adjacent_interest`: 既知の関心から少しずれた隣接領域の記事
+- `surprise`: 普段の中心からは離れるが、情報源と新規性に期待できる記事
+- `general`: 総合スコアで残した記事
 
-## Tests
+DB は `data/app.db` に作成されます。検索語候補は現時点では画面に表示するだけで、外部検索 API には接続していません。
+
+## テスト
 
 ```powershell
 python -m pytest
 ```
 
-## Future Extensions
+## 今後の拡張候補
 
-Web search providers, article body extraction, RSS source suggestions, daily reports, and interest profile visualization.
+- AI が生成した検索語を使う Web 検索 API 連携
+- 記事本文の取得と要約精度の改善
+- 評価の高い記事から RSS 情報源を提案
+- 重複ニュースの統合
+- 深掘りモード
+- Markdown または HTML の日次レポート出力
+- 関心プロファイルの可視化

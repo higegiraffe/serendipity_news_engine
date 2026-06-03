@@ -29,11 +29,11 @@ def _fallback_config(path: Path) -> dict:
         ]}
     if path.name == "interests.yaml":
         return {"seed_interests": [
-            {"name": "AI for daily life support", "description": "AI and automation that solve everyday problems.", "weight": 1.0},
-            {"name": "Why useful technology does not spread", "description": "Adoption barriers such as cost, UX, rules, privacy, and operations.", "weight": 1.2},
-            {"name": "FX, MT4, and trading logic", "description": "MT4, indicators, expert advisors, Fibonacci, pivots, and trading systems.", "weight": 1.0},
-            {"name": "Reasoning behind mechanical structures", "description": "Why machine, vehicle, robot, and camera structures are designed as they are.", "weight": 1.0},
-            {"name": "Usability of UI and institutions", "description": "Workflow, public service, business system, and interface friction.", "weight": 1.1},
+            {"name": "AIによる生活支援", "description": "AIや自動化で生活上の困りごとを解決する技術。", "weight": 1.0},
+            {"name": "有用な技術が普及しない理由", "description": "コスト、UX、制度、プライバシー、運用など普及を妨げる要因。", "weight": 1.2},
+            {"name": "FX・MT4・売買ロジック", "description": "MT4、インジケーター、EA、フィボナッチ、ピボット、売買戦略。", "weight": 1.0},
+            {"name": "機械構造の理由", "description": "機械、車、ロボット、カメラなどの構造がその形になった理由。", "weight": 1.0},
+            {"name": "UIと制度の使いにくさ", "description": "作業手順、公共サービス、業務システム、インターフェースの摩擦。", "weight": 1.1},
         ]}
     return {}
 
