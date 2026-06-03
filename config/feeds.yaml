@@ -1,0 +1,16 @@
+﻿feeds:
+  - name: "NHK News"
+    url: "https://www.nhk.or.jp/rss/news/cat0.xml"
+    category: "general_news"
+    trust_weight: 0.8
+    enabled: true
+  - name: "ITmedia"
+    url: "https://rss.itmedia.co.jp/rss/2.0/news_bursts.xml"
+    category: "technology"
+    trust_weight: 0.8
+    enabled: true
+  - name: "OpenAI Blog"
+    url: "https://openai.com/news/rss.xml"
+    category: "ai"
+    trust_weight: 0.9
+    enabled: true

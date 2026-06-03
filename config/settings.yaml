@@ -1,0 +1,15 @@
+﻿app:
+  max_articles_per_run: 200
+  recommendation_count: 30
+  language: "ja"
+embedding:
+  provider: "local"
+  local_model: "paraphrase-multilingual-MiniLM-L12-v2"
+  openai_model: "text-embedding-3-small"
+scoring:
+  freshness_weight: 0.15
+  source_weight: 0.10
+  novelty_weight: 0.15
+  similarity_weight: 0.60
+ui:
+  default_view: "recommended"

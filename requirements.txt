@@ -1,0 +1,10 @@
+﻿feedparser
+pandas
+pyyaml
+python-dotenv
+sentence-transformers
+scikit-learn
+streamlit
+openai
+numpy
+pytest

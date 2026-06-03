@@ -1,0 +1,16 @@
+﻿seed_interests:
+  - name: "AI for daily life support"
+    description: "AI, cameras, voice, smart homes, automation, dementia support, lost-item prevention, care support, and practical tools that solve everyday problems."
+    weight: 1.0
+  - name: "Why useful technology does not spread"
+    description: "Barriers that prevent promising technology from adoption, including cost, regulation, UX, privacy, operations, and maintenance burden."
+    weight: 1.2
+  - name: "FX, MT4, and trading logic"
+    description: "MT4, indicators, expert advisors, Fibonacci, pivots, regime filters, trade logs, and automated trading strategy design."
+    weight: 1.0
+  - name: "Reasoning behind mechanical structures"
+    description: "Vehicle, aircraft, robot, camera, and machine mechanisms, with interest in why a shape or structure was chosen."
+    weight: 1.0
+  - name: "Usability of UI and institutions"
+    description: "Applications, workflows, public services, business systems, transport services, and rule/interface design that create friction or improvement."
+    weight: 1.1
