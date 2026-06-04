@@ -48,7 +48,7 @@ SEARCH_COLUMNS = {
 }
 
 
-def article_card(article: dict) -> None:
+def article_card(article: dict, key_prefix: str) -> None:
     with st.container(border=True):
         st.subheader(article["title"])
         recommendation_type = article.get("recommendation_type") or "general"
@@ -63,7 +63,7 @@ def article_card(article: dict) -> None:
         st.link_button("記事を開く", article["url"])
         st.caption("次回検索用キーワード候補")
         st.code(article.get("generated_search_terms") or "", language="text")
-        with st.form(f"feedback-{article['id']}"):
+        with st.form(f"{key_prefix}-feedback-{article['id']}"):
             rating = st.radio("評価", options=list(RATING_LABELS.keys()), format_func=lambda value: RATING_LABELS[value], horizontal=True)
             label = st.selectbox("フィードバック分類", FEEDBACK_LABELS)
             comment = st.text_area("コメント", height=80)
@@ -91,7 +91,7 @@ def main() -> None:
             st.success("スコアを再計算しました")
     with tab_rec:
         for article in recommendations():
-            article_card(article)
+            article_card(article, "recommended")
     with tab_all:
         conn = connect()
         rows = fetch_all(conn, "SELECT * FROM articles ORDER BY fetched_at DESC LIMIT 200")
@@ -101,7 +101,7 @@ def main() -> None:
         for row in rows:
             item = dict(row)
             if source == "すべて" or item.get("source_name") == source:
-                article_card(item)
+                article_card(item, "all")
     with tab_profile:
         conn = connect()
         profiles = fetch_all(conn, "SELECT profile_name, description, weight, updated_at FROM interest_profile ORDER BY weight DESC")
