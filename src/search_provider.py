@@ -2,5 +2,5 @@
 
 
 def search_web(query: str, max_results: int = 10) -> list[dict]:
-    """Placeholder for future web search providers."""
+    """将来のWeb検索プロバイダ連携用の仮実装。"""
     return []

@@ -39,8 +39,15 @@ def cmd_run(args) -> None:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="自分用セレンディピティ記事推薦エンジン")
     sub = parser.add_subparsers(dest="command", required=True)
-    for name, func in {"init": cmd_init, "fetch": cmd_fetch, "embed": cmd_embed, "score": cmd_score, "run": cmd_run}.items():
-        p = sub.add_parser(name)
+    commands = {
+        "init": (cmd_init, "DBを作成し、初期関心プロファイルを登録します"),
+        "fetch": (cmd_fetch, "RSSから記事を取得してDBに保存します"),
+        "embed": (cmd_embed, "未処理の記事embeddingを作成します"),
+        "score": (cmd_score, "フィードバックを反映し、記事スコアを再計算します"),
+        "run": (cmd_run, "fetch、embed、scoreをまとめて実行します"),
+    }
+    for name, (func, help_text) in commands.items():
+        p = sub.add_parser(name, help=help_text, description=help_text)
         p.set_defaults(func=func)
     return parser
 
