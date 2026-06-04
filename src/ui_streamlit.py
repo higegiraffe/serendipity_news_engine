@@ -1,6 +1,13 @@
-﻿from __future__ import annotations
+from __future__ import annotations
+
+import sys
+from pathlib import Path
 
 import streamlit as st
+
+ROOT_DIR = Path(__file__).resolve().parents[1]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
 
 from src.db import connect, fetch_all, init_db, save_feedback
 from src.profile import init_interest_profile, update_profile_from_feedback
@@ -45,7 +52,11 @@ def article_card(article: dict) -> None:
     with st.container(border=True):
         st.subheader(article["title"])
         recommendation_type = article.get("recommendation_type") or "general"
-        st.caption(f"{article.get('source_name') or '情報源不明'} | {article.get('published_at') or '日付不明'} | {TYPE_LABELS.get(recommendation_type, recommendation_type)}")
+        st.caption(
+            f"{article.get('source_name') or '情報源不明'} | "
+            f"{article.get('published_at') or '日付不明'} | "
+            f"{TYPE_LABELS.get(recommendation_type, recommendation_type)}"
+        )
         st.write(article.get("summary") or "概要なし")
         st.progress(float(article.get("final_score") or 0.0), text=f"スコア {float(article.get('final_score') or 0.0):.2f}")
         st.write(article.get("recommendation_reason") or "推薦理由はまだありません。")
